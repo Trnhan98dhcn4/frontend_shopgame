@@ -13,4 +13,5 @@ export interface INintendoModel {
     price: string
     code: string
     des: string
+    q: string
 }

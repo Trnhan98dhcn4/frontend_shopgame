@@ -7,4 +7,5 @@ export interface IDiskGameModel {
     Tabs: string
     videoId: string
     code: string
+    q: string
 }

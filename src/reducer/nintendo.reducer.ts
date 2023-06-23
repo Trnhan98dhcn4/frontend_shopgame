@@ -1,6 +1,6 @@
 import { AsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { INintendoModel } from '../model'
-import { getAllNintendoThunk, getDetailNintendoThunk } from './thunk.api'
+import { getAllNintendoThunk, getDetailNintendoThunk, getSearchNintendoThunk } from './thunk.api'
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
 
@@ -11,6 +11,7 @@ type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 interface NintendoState {
     dataNintendo: INintendoModel[]
     detailNintendo: INintendoModel
+    searchNintendo: INintendoModel[]
     loading: boolean
     error: null | string
     currentRequestId: undefined | string
@@ -19,6 +20,7 @@ interface NintendoState {
 const initialState: NintendoState = {
     dataNintendo: [],
     detailNintendo: {} as INintendoModel,
+    searchNintendo: [],
     loading: false,
     error: null,
     currentRequestId: undefined
@@ -33,10 +35,16 @@ const NintendoSlice = createSlice({
         },
         setDetailNintendo: (state, action: PayloadAction<INintendoModel>) => {
             state.detailNintendo = action.payload
+        },
+        setSearchNintendo: (state, action: PayloadAction<INintendoModel[]>) => {
+            state.searchNintendo = action.payload
         }
     },
     extraReducers: (builder) => {
         builder
+            .addCase(getSearchNintendoThunk.fulfilled, (state, action) => {
+                state.searchNintendo = action.payload
+            })
             .addCase(getDetailNintendoThunk.fulfilled, (state, action) => {
                 state.detailNintendo = action.payload
             })
@@ -76,6 +84,6 @@ const NintendoSlice = createSlice({
 
 const { reducer, actions } = NintendoSlice
 
-export const { setAllNintendo, setDetailNintendo } = actions
+export const { setAllNintendo, setDetailNintendo, setSearchNintendo } = actions
 
 export default reducer

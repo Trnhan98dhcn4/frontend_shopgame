@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, AsyncThunk } from '@reduxjs/toolkit'
 import { IDiskGameModel } from '../model'
-import { getAllDiskGameThunk, getDetailDiskGameThunk } from './thunk.api'
+import { getAllDiskGameThunk, getDetailDiskGameThunk, getSearchDiskGameThunk } from './thunk.api'
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
 
@@ -11,6 +11,7 @@ type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 interface IDiskGameSate {
     dataDiskGame: IDiskGameModel[]
     detailDiskGame: IDiskGameModel
+    searchDiskGame: IDiskGameModel[]
     loading: boolean
     error: null | string
     currentRequestId: undefined | string
@@ -19,6 +20,7 @@ interface IDiskGameSate {
 const initialState: IDiskGameSate = {
     dataDiskGame: [],
     detailDiskGame: {} as IDiskGameModel,
+    searchDiskGame: [],
     loading: false,
     error: null,
     currentRequestId: undefined
@@ -33,10 +35,16 @@ const distGameSlice = createSlice({
         },
         setDetailDiskGame: (state, action: PayloadAction<IDiskGameModel>) => {
             state.detailDiskGame = action.payload
+        },
+        setSearchDiskGame: (state, action: PayloadAction<IDiskGameModel[]>) => {
+            state.searchDiskGame = action.payload
         }
     },
     extraReducers: (builder) => {
         builder
+            .addCase(getSearchDiskGameThunk.fulfilled, (state, action) => {
+                state.searchDiskGame = action.payload
+            })
             .addCase(getAllDiskGameThunk.fulfilled, (state, action) => {
                 state.dataDiskGame = action.payload
             })
@@ -76,5 +84,5 @@ const distGameSlice = createSlice({
 
 const { reducer, actions } = distGameSlice
 
-export const { setAllDiskGame, setDetailDiskGame } = actions
+export const { setAllDiskGame, setDetailDiskGame, setSearchDiskGame } = actions
 export default reducer
