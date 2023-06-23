@@ -74,6 +74,7 @@ const distGameSlice = createSlice({
     }
 })
 
-const { reducer } = distGameSlice
+const { reducer, actions } = distGameSlice
 
+export const { setAllDiskGame, setDetailDiskGame } = actions
 export default reducer

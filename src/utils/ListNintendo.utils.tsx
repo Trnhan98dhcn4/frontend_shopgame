@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const ListNintendoArrayUtils = (data: {}[]) => {
+function ListNintendoArrayUtils(data: {}[]) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     return (
         <div>
@@ -27,9 +27,8 @@ const ListNintendoArrayUtils = (data: {}[]) => {
                     ]: any,
                     index: number
                 ) => (
-                    <Link to={`/nintendo/${_id}/detail`}>
+                    <Link to={`/nintendo/${_id}/detail`} key={index}>
                         <div
-                            key={index}
                             className="p-5 border-b border-gray-300 cursor-pointer"
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}

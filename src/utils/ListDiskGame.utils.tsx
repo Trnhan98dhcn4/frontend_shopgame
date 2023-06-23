@@ -1,15 +1,14 @@
 import classNames from 'classnames'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const ListDiskGameUtils = (data: {}[]) => {
+function ListDiskGameUtils(data: {}[]) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     return (
         <div className="flex flex-wrap">
             {data.map(([_id, img1, img2, title, price, Tabs, code, videoId]: any, index: number) => (
-                <Link to={`/disk/${_id}/detail`}>
+                <Link to={`/disk/${_id}/detail`} key={index}>
                     <div
-                        key={index}
                         className="p-5 border-b border-gray-300 cursor-pointer w-[20rem] h-[20rem]"
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
