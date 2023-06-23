@@ -4,5 +4,9 @@ export const PathConstant = {
     nintendo: {
         list: '/nintendo',
         detail: '/nintendo/:key/detail'
+    },
+    diskGame: {
+        list: '/disk',
+        detail: '/disk/:key/detail'
     }
 }

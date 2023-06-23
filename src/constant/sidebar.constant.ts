@@ -10,7 +10,7 @@ export const SHOP_SIDEBAR_LINK = [
     {
         key: 'disk',
         label: 'Đĩa game Switch',
-        path: '/disk',
+        path: PathConstant.diskGame.list,
         icon: 'https://theme.hstatic.net/1000231532/1000832749/14/vertical_icon_2.png?v=435'
     }
 ]

@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import nintendoReducer from '../reducer/nintendo.reducer'
+import diskGameReducer from '../reducer/diskgame.reducer'
 
 export const store = configureStore({
     reducer: {
-        nintendo: nintendoReducer
+        nintendo: nintendoReducer,
+        diskGame: diskGameReducer
     }
 })
 
