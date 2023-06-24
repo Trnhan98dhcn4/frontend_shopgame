@@ -5,14 +5,19 @@ import { useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
 import { IDiskGameModel, INintendoModel } from '../../../model'
+import { setSearchDiskGame } from '../../../reducer/diskgame.reducer'
+import { setSearchNintendo } from '../../../reducer/nintendo.reducer'
 import { getSearchDiskGameThunk, getSearchNintendoThunk } from '../../../reducer/thunk.api'
 import { PopoverComponent } from './popover'
-import { setSearchNintendo } from '../../../reducer/nintendo.reducer'
-import { setSearchDiskGame } from '../../../reducer/diskgame.reducer'
+import { Link } from 'react-router-dom'
+import { PathConstant } from '../../../constant/path.constant'
+import { setCount } from '../../../reducer/cartshop.reducer'
 
 const HeaderComponent = () => {
     const searchDiskGame = useAppSelector((state: RootState) => state.diskGame.searchDiskGame)
     const searchNintendo = useAppSelector((state: RootState) => state.nintendo.searchNintendo)
+    const cartShop = useAppSelector((state: RootState) => state.cartShop.dataCardShop)
+    const countShop = useAppSelector((state: RootState) => state.cartShop.numberType)
 
     const dispatch = useAppDispatch()
 
@@ -45,6 +50,7 @@ const HeaderComponent = () => {
     const onSubmitSearchInput = async (event: IDiskGameModel & INintendoModel) => {
         dispatch(getSearchNintendoThunk(event))
         dispatch(getSearchDiskGameThunk(event))
+        dispatch(setCount(1))
     }
 
     const showResultSearch = (searchNintendo.length > 0 || searchDiskGame.length > 0) && inputValue.trim() !== ''
@@ -54,8 +60,7 @@ const HeaderComponent = () => {
         setValue('q', value)
         handleSubmit(onSubmitSearchInput)(e)
     }
-    console.log(searchDiskGame)
-    console.log(searchNintendo)
+
     return (
         <div className="bg-white h-16 px-4  flex justify-between items-center border-b border-gray-300">
             <div className="relative">
@@ -73,6 +78,7 @@ const HeaderComponent = () => {
                         {...register('q')}
                         autoComplete="off"
                         onChange={handleInputChange}
+                        onFocus={() => setShowResult(true)}
                         className="text-sm focus:outline-none active:outline-none h-10 w-[24rem] border border-gray-300 rounded-sm pl-11 px-4"
                     />
                 </form>
@@ -93,15 +99,28 @@ const HeaderComponent = () => {
                             <div className="mt-2 py-1 text-sm">
                                 {inputValue &&
                                     searchNintendo.map((item, index) => (
-                                        <div key={index} className="flex flex-row ">
-                                            <div className="flex">
-                                                <img src={item.img1} alt={item.title} className="w-[5rem] h-[5rem]" />
+                                        <Link
+                                            key={index}
+                                            to={PathConstant.nintendo.list + '/' + item._id + '/detail'}
+                                            onClick={() => {
+                                                setShowResult(false)
+                                                setValue('q', '')
+                                            }}
+                                        >
+                                            <div className="flex flex-row p-3 border-b border-gray-300 cursor-pointer">
+                                                <div className="flex">
+                                                    <img
+                                                        src={item.img1}
+                                                        alt={item.title}
+                                                        className="w-[5rem] h-[5rem]"
+                                                    />
+                                                </div>
+                                                <div className="flex-1 px-2">
+                                                    <p>{item.title}</p>
+                                                    <p className="text-red-600 py-2">{item.price} VND</p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <p>{item.title}</p>
-                                                <p>{item.price}</p>
-                                            </div>
-                                        </div>
+                                        </Link>
                                     ))}
                             </div>
                             <div className="border-b border-gray-500">
@@ -110,15 +129,28 @@ const HeaderComponent = () => {
                             <div className="mt-2 py-1 text-sm">
                                 {inputValue &&
                                     searchDiskGame.map((item, index) => (
-                                        <div key={index} className="flex flex-row ">
-                                            <div className="flex">
-                                                <img src={item.img1} alt={item.title} className="w-[5rem] h-[5rem]" />
+                                        <Link
+                                            key={index}
+                                            to={PathConstant.diskGame.list + '/' + item._id + '/detail'}
+                                            onClick={() => {
+                                                setShowResult(false)
+                                                setValue('q', '')
+                                            }}
+                                        >
+                                            <div className="flex flex-row p-3 border-b border-gray-300 cursor-pointer">
+                                                <div className="flex">
+                                                    <img
+                                                        src={item.img1}
+                                                        alt={item.title}
+                                                        className="w-[5rem] h-[5rem]"
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p>{item.title}</p>
+                                                    <p className="text-red-600 py-2">{item.price} VND</p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <p>{item.title}</p>
-                                                <p>{item.price}</p>
-                                            </div>
-                                        </div>
+                                        </Link>
                                     ))}
                             </div>
                         </div>
@@ -126,7 +158,7 @@ const HeaderComponent = () => {
                 </Transition>
             </div>
 
-            <div className="flex items-center gap-2 mr-2">
+            <div className="flex items-center gap-2 mr-2 relative">
                 <PopoverComponent>
                     <img
                         src="https://cdn-icons-png.flaticon.com/512/263/263142.png"
@@ -134,6 +166,13 @@ const HeaderComponent = () => {
                         width={24}
                         height={24}
                     />
+                    {cartShop.length === 0 ? (
+                        ''
+                    ) : (
+                        <div className="absolute -top-1/2 right-0 h-[1.5rem] w-[1rem] bg-red-600 rounded-md text-white">
+                            {cartShop.length}
+                        </div>
+                    )}
                 </PopoverComponent>
                 <Menu as="div" className="relative inline-block text-left">
                     <div>

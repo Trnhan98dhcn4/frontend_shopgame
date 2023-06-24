@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
-import { useParams } from 'react-router-dom'
-import { getDetailDiskGameThunk } from '../../../reducer/thunk.api'
+import { ICartShop } from '../../../model'
+import { setDown, setUp } from '../../../reducer/cartshop.reducer'
+import { getAllCartShopThink, getDetailDiskGameThunk, postCartShopThunk } from '../../../reducer/thunk.api'
 
 const DetailDiskGame = () => {
     const diskGameDetail = useAppSelector((state: RootState) => state.diskGame.detailDiskGame)
+    const count = useAppSelector((state: RootState) => state.cartShop.numberType)
     const loading = useAppSelector((state: RootState) => state.diskGame.loading)
     const error = useAppSelector((state: RootState) => state.diskGame.error)
     const dispatch = useAppDispatch()
@@ -24,6 +27,11 @@ const DetailDiskGame = () => {
     }
     if (error) {
         return <div>error: {error}</div>
+    }
+    const handleCartShop = async (event: ICartShop) => {
+        const { _id, ...newEvent } = event
+        await dispatch(postCartShopThunk(newEvent as ICartShop))
+        await dispatch(getAllCartShopThink())
     }
 
     return (
@@ -44,12 +52,36 @@ const DetailDiskGame = () => {
                 </div>
                 <div className="pt-2 flex flex-row">
                     <div className="flex flex-row mr-2">
-                        <button className="px-5 py-2 flex justify-center items-center bg-gray-300">-</button>
-                        <div className="px-5 py-2 flex justify-center items-center bg-white">1</div>
-                        <button className="px-5 py-2 flex justify-center items-center bg-gray-300">+</button>
+                        <button
+                            className="px-5 py-2 flex justify-center items-center bg-gray-300"
+                            onClick={() => dispatch(setDown())}
+                        >
+                            -
+                        </button>
+                        <div className="px-5 py-2 flex justify-center items-center bg-white">{count}</div>
+                        <button
+                            className="px-5 py-2 flex justify-center items-center bg-gray-300"
+                            onClick={() => dispatch(setUp())}
+                        >
+                            +
+                        </button>
                     </div>
                     <div className="flex-1 flex justify-center  items-center ring ring-red-300 hover:ring-red-700  active:bg-red-600">
-                        <button className="font-bold text-red-600">THÊM VÀO GIỎ</button>
+                        <button
+                            type="button"
+                            className="font-bold text-red-600 w-full"
+                            onClick={() =>
+                                handleCartShop({
+                                    _id: '',
+                                    img1: diskGameDetail.img1,
+                                    price: diskGameDetail.price,
+                                    title: diskGameDetail.title,
+                                    SL: String(count)
+                                })
+                            }
+                        >
+                            THÊM VÀO GIỎ
+                        </button>
                     </div>
                 </div>
                 <div className="flex py-3">

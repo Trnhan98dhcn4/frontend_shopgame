@@ -1,19 +1,19 @@
 import classNames from 'classnames'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function ListDiskGameUtils(data: {}[]) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     return (
-        <div className="flex flex-wrap">
+        <div className="flex flex-wrap justify-between">
             {data.map(([_id, img1, img2, title, price, Tabs, code, videoId]: any, index: number) => (
                 <Link to={`/disk/${_id}/detail`} key={index}>
                     <div
-                        className="p-5 border-b border-gray-300 cursor-pointer w-[20rem] h-[20rem]"
+                        className=" border-b border-gray-300 cursor-pointer w-[20rem] h-[20rem]  "
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
-                        <div className="flex flex-col px-3 mr-2 border border-gray-200 h-[18rem]">
+                        <div className="flex flex-col  mr-1 border border-gray-200 h-[18rem]">
                             <img
                                 src={classNames({
                                     [img1]: hoveredIndex !== index,

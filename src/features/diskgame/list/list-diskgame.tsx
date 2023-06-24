@@ -16,7 +16,7 @@ const ListDiskGame = (props: ListDiskGame) => {
     return (
         <div className="h-10 bg-red-600 flex flex-col">
             <h2 className="text-2xl text-white px-3 ">Sản phẩm của Shop đề xuất</h2>
-            <div className="p-4 w-[85rem]">{rows()}</div>
+            <div className="p-4 w-[80rem]">{rows()}</div>
         </div>
     )
 }

@@ -2,11 +2,14 @@ import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
 import { useParams } from 'react-router-dom'
-import { getDetailNintendoThunk } from '../../../reducer/thunk.api'
+import { getAllCartShopThink, getDetailNintendoThunk, postCartShopThunk } from '../../../reducer/thunk.api'
+import { ICartShop } from '../../../model'
+import { setDown, setUp } from '../../../reducer/cartshop.reducer'
 
 const DetailsNintendoComponent = () => {
     const nintendoDetail = useAppSelector((state: RootState) => state.nintendo.detailNintendo)
     const loading = useAppSelector((state: RootState) => state.nintendo.loading)
+    const count = useAppSelector((state: RootState) => state.cartShop.numberType)
     const error = useAppSelector((state: RootState) => state.nintendo.error)
     const dispatch = useAppDispatch()
 
@@ -24,6 +27,11 @@ const DetailsNintendoComponent = () => {
     }
     if (error) {
         return <div>error: {error}</div>
+    }
+    const handleCartShop = async (event: ICartShop) => {
+        const { _id, ...newEvent } = event
+        await dispatch(postCartShopThunk(newEvent as ICartShop))
+        await dispatch(getAllCartShopThink())
     }
 
     return (
@@ -44,12 +52,35 @@ const DetailsNintendoComponent = () => {
                 </div>
                 <div className="pt-2 flex flex-row">
                     <div className="flex flex-row mr-2">
-                        <button className="px-5 py-2 flex justify-center items-center bg-gray-300">-</button>
-                        <div className="px-5 py-2 flex justify-center items-center bg-white">1</div>
-                        <button className="px-5 py-2 flex justify-center items-center bg-gray-300">+</button>
+                        <button
+                            className="px-5 py-2 flex justify-center items-center bg-gray-300"
+                            onClick={() => dispatch(setDown())}
+                        >
+                            -
+                        </button>
+                        <div className="px-5 py-2 flex justify-center items-center bg-white">{count}</div>
+                        <button
+                            className="px-5 py-2 flex justify-center items-center bg-gray-300"
+                            onClick={() => dispatch(setUp())}
+                        >
+                            +
+                        </button>
                     </div>
                     <div className="flex-1 flex justify-center  items-center ring ring-red-300 hover:ring-red-700  active:bg-red-600">
-                        <button className="font-bold text-red-600">THÊM VÀO GIỎ</button>
+                        <button
+                            className="font-bold text-red-600 w-full"
+                            onClick={() =>
+                                handleCartShop({
+                                    _id: '',
+                                    img1: nintendoDetail.img1,
+                                    price: nintendoDetail.price,
+                                    title: nintendoDetail.title,
+                                    SL: String(count)
+                                })
+                            }
+                        >
+                            THÊM VÀO GIỎ
+                        </button>
                     </div>
                 </div>
                 <div className="flex py-3">

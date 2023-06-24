@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function ListNintendoArrayUtils(data: {}[]) {
@@ -41,7 +41,7 @@ function ListNintendoArrayUtils(data: {}[]) {
                                             [img2]: hoveredIndex === index
                                         })}
                                         alt="img1"
-                                        width={180}
+                                        width={250}
                                         height={80}
                                     />
                                 </div>
