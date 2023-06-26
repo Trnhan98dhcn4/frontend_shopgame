@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, AsyncThunk } from '@reduxjs/toolkit'
 import { ICartShop } from '../model'
-import { getAllCartShopThink, postCartShopThunk } from './thunk.api'
+import { deleteCartShopThunk, getAllCartShopThink, postCartShopThunk, putCartShopThunk } from './thunk.api'
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
 
@@ -10,6 +10,7 @@ type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 
 interface IDiskGameSate {
     dataCardShop: ICartShop[]
+    detailShop: ICartShop
     numberType: number
     loading: boolean
     error: null | string
@@ -18,6 +19,7 @@ interface IDiskGameSate {
 
 const initialState: IDiskGameSate = {
     dataCardShop: [],
+    detailShop: {} as ICartShop,
     numberType: 1,
     loading: false,
     error: null,
@@ -39,10 +41,36 @@ const cardShopSlice = createSlice({
         },
         setDown: (state) => {
             state.numberType -= 1
+        },
+        setCountUp: (state, action: PayloadAction<ICartShop>) => {
+            const SLCartShop = action.payload
+            const selectedItem = state.dataCardShop.find((item) => item._id === SLCartShop._id)
+            if (selectedItem) {
+                selectedItem.SL = String(Number(selectedItem.SL) + 1)
+            }
+        },
+        setCountDown: (state, action: PayloadAction<ICartShop>) => {
+            const SLCartShop = action.payload
+            const selectedItem = state.dataCardShop.find((item) => item._id === SLCartShop._id)
+            if (selectedItem) {
+                selectedItem.SL = String(Number(selectedItem.SL) - 1)
+            }
         }
     },
     extraReducers: (builder) => {
         builder
+            .addCase(deleteCartShopThunk.fulfilled, (state, action) => {
+                const _CartShop = action.meta.requestId
+                const index = state.dataCardShop.findIndex((f) => f._id === _CartShop)
+                if (index !== -1) {
+                    state.dataCardShop.splice(index, 1)
+                }
+            })
+            .addCase(putCartShopThunk.fulfilled, (state, action) => {
+                const _newCartShop = action.payload
+                const index = state.dataCardShop.findIndex((f) => f._id === _newCartShop._id)
+                state.dataCardShop[index] = _newCartShop
+            })
             .addCase(postCartShopThunk.fulfilled, (state, action) => {
                 state.dataCardShop.push(action.payload)
             })
@@ -82,5 +110,5 @@ const cardShopSlice = createSlice({
 
 const { reducer, actions } = cardShopSlice
 
-export const { setAllCardShop, setUp, setDown, setCount } = actions
+export const { setAllCardShop, setUp, setDown, setCount, setCountUp, setCountDown } = actions
 export default reducer

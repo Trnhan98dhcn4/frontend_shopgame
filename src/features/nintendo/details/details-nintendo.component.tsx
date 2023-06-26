@@ -1,17 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
 import { useParams } from 'react-router-dom'
-import { getAllCartShopThink, getDetailNintendoThunk, postCartShopThunk } from '../../../reducer/thunk.api'
+import {
+    getAllCartShopThink,
+    getDetailNintendoThunk,
+    postCartShopThunk,
+    putCartShopThunk
+} from '../../../reducer/thunk.api'
 import { ICartShop } from '../../../model'
 import { setDown, setUp } from '../../../reducer/cartshop.reducer'
 
 const DetailsNintendoComponent = () => {
     const nintendoDetail = useAppSelector((state: RootState) => state.nintendo.detailNintendo)
+    const AllCartShop = useAppSelector((state: RootState) => state.cartShop.dataCardShop)
     const loading = useAppSelector((state: RootState) => state.nintendo.loading)
     const count = useAppSelector((state: RootState) => state.cartShop.numberType)
     const error = useAppSelector((state: RootState) => state.nintendo.error)
     const dispatch = useAppDispatch()
+    const [duplicateCount, setDuplicateCount] = useState(0)
 
     const { key } = useParams()
 
@@ -30,7 +37,20 @@ const DetailsNintendoComponent = () => {
     }
     const handleCartShop = async (event: ICartShop) => {
         const { _id, ...newEvent } = event
-        await dispatch(postCartShopThunk(newEvent as ICartShop))
+
+        const isDuplicate = AllCartShop.some((f) => {
+            return f.title === newEvent.title
+        })
+
+        if (isDuplicate) {
+            const duplicateItem = AllCartShop.find((f) => f.title === newEvent.title)
+            const updatedSL = parseInt(newEvent.SL) + duplicateCount + 1
+            setDuplicateCount((prevCount) => prevCount + 1)
+            newEvent.SL = updatedSL.toString()
+            await dispatch(putCartShopThunk({ id: duplicateItem?._id as string, body: newEvent as ICartShop }))
+        } else {
+            await dispatch(postCartShopThunk(newEvent as ICartShop))
+        }
         await dispatch(getAllCartShopThink())
     }
 
