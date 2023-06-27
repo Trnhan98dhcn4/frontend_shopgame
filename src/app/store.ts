@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import nintendoReducer from '../reducer/nintendo.reducer'
 import diskGameReducer from '../reducer/diskgame.reducer'
 import cardShopReducer from '../reducer/cartshop.reducer'
+import userReducer from '../reducer/user.reducer'
 
 export const store = configureStore({
     reducer: {
         nintendo: nintendoReducer,
         diskGame: diskGameReducer,
-        cartShop: cardShopReducer
+        cartShop: cardShopReducer,
+        user: userReducer
     }
 })
 

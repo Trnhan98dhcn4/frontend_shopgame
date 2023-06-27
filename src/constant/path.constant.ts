@@ -8,5 +8,9 @@ export const PathConstant = {
     diskGame: {
         list: '/disk',
         detail: '/disk/:key/detail'
+    },
+    user: {
+        login: '/login',
+        register: '/register'
     }
 }

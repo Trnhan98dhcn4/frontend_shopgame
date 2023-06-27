@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { getAllNintendo, getDetailNintendo, getSearchNintendo } from '../api/nintendo.api'
 import { getAllDiskGame, getDetailDiskGame, getSearchDiskGame } from '../api/diskgame.api'
 import { deleteCartShop, getAllCartShop, postCartShop, putCartShop } from '../api/cardshop.api'
+import { getAllUser, getDetailUser, postLogin, postRegister } from '../api/api.users'
 
 // thunk api nintendo
 export const getAllNintendoThunk = createAsyncThunk('data/getAllNintendo', getAllNintendo)
@@ -18,3 +19,9 @@ export const getAllCartShopThink = createAsyncThunk('data/getAllCartShop', getAl
 export const postCartShopThunk = createAsyncThunk('data/postCartShopThunk', postCartShop)
 export const putCartShopThunk = createAsyncThunk('data/putCartShopThunk', putCartShop)
 export const deleteCartShopThunk = createAsyncThunk('data/deleteCartShopThunk', deleteCartShop)
+
+//thunk api user
+export const getAllUserThunk = createAsyncThunk('data/getAllUserThunk', getAllUser)
+export const getDetailUserThunk = createAsyncThunk('data/getDetailUserThunk', getDetailUser)
+export const postUserLoginThunk = createAsyncThunk('data/postUserLoginThunk', postLogin)
+export const postUserRegisterThunk = createAsyncThunk('data/postUserRegisterThunk', postRegister)

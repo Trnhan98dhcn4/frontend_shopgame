@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
     getAllCartShopThink,
     getDetailNintendoThunk,
@@ -10,6 +10,7 @@ import {
 } from '../../../reducer/thunk.api'
 import { ICartShop } from '../../../model'
 import { setDown, setUp } from '../../../reducer/cartshop.reducer'
+import { PathConstant } from '../../../constant/path.constant'
 
 const DetailsNintendoComponent = () => {
     const nintendoDetail = useAppSelector((state: RootState) => state.nintendo.detailNintendo)
@@ -19,8 +20,10 @@ const DetailsNintendoComponent = () => {
     const error = useAppSelector((state: RootState) => state.nintendo.error)
     const dispatch = useAppDispatch()
     const [duplicateCount, setDuplicateCount] = useState(0)
+    const isAuth = useAppSelector((state: RootState) => state.user.isAuth)
 
     const { key } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const CallApi = async () => {
@@ -36,22 +39,26 @@ const DetailsNintendoComponent = () => {
         return <div>error: {error}</div>
     }
     const handleCartShop = async (event: ICartShop) => {
-        const { _id, ...newEvent } = event
+        if (isAuth) {
+            const { _id, ...newEvent } = event
 
-        const isDuplicate = AllCartShop.some((f) => {
-            return f.title === newEvent.title
-        })
+            const isDuplicate = AllCartShop.some((f) => {
+                return f.title === newEvent.title
+            })
 
-        if (isDuplicate) {
-            const duplicateItem = AllCartShop.find((f) => f.title === newEvent.title)
-            const updatedSL = parseInt(newEvent.SL) + duplicateCount + 1
-            setDuplicateCount((prevCount) => prevCount + 1)
-            newEvent.SL = updatedSL.toString()
-            await dispatch(putCartShopThunk({ id: duplicateItem?._id as string, body: newEvent as ICartShop }))
+            if (isDuplicate) {
+                const duplicateItem = AllCartShop.find((f) => f.title === newEvent.title)
+                const updatedSL = parseInt(newEvent.SL) + duplicateCount + 1
+                setDuplicateCount((prevCount) => prevCount + 1)
+                newEvent.SL = updatedSL.toString()
+                await dispatch(putCartShopThunk({ id: duplicateItem?._id as string, body: newEvent as ICartShop }))
+            } else {
+                await dispatch(postCartShopThunk(newEvent as ICartShop))
+            }
+            await dispatch(getAllCartShopThink())
         } else {
-            await dispatch(postCartShopThunk(newEvent as ICartShop))
+            navigate(PathConstant.user.login)
         }
-        await dispatch(getAllCartShopThink())
     }
 
     return (

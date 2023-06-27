@@ -2,22 +2,24 @@ import { Menu, Transition } from '@headlessui/react'
 import classNames from 'classnames'
 import { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
-import { IDiskGameModel, INintendoModel } from '../../../model'
+import { PathConstant } from '../../../constant/path.constant'
+import { IDiskGameModel, INintendoModel, IUserModel } from '../../../model'
+import { setCount } from '../../../reducer/cartshop.reducer'
 import { setSearchDiskGame } from '../../../reducer/diskgame.reducer'
 import { setSearchNintendo } from '../../../reducer/nintendo.reducer'
-import { getSearchDiskGameThunk, getSearchNintendoThunk } from '../../../reducer/thunk.api'
+import { getDetailUserThunk, getSearchDiskGameThunk, getSearchNintendoThunk } from '../../../reducer/thunk.api'
 import { PopoverComponent } from './popover'
-import { Link } from 'react-router-dom'
-import { PathConstant } from '../../../constant/path.constant'
-import { setCount } from '../../../reducer/cartshop.reducer'
+import { setLogout, setUserDetail } from '../../../reducer/user.reducer'
 
 const HeaderComponent = () => {
     const searchDiskGame = useAppSelector((state: RootState) => state.diskGame.searchDiskGame)
     const searchNintendo = useAppSelector((state: RootState) => state.nintendo.searchNintendo)
     const cartShop = useAppSelector((state: RootState) => state.cartShop.dataCardShop)
-    const countShop = useAppSelector((state: RootState) => state.cartShop.numberType)
+    const isAuth = useAppSelector((state: RootState) => state.user.isAuth)
+    const userDetail = useAppSelector((state: RootState) => state.user.detailUser)
 
     const dispatch = useAppDispatch()
 
@@ -33,19 +35,25 @@ const HeaderComponent = () => {
         { href: '/account-settings', label: 'Account settings' },
         { href: '/support', label: 'Support' },
         { href: '/license', label: 'License' },
-        { href: '/sign-out', label: 'Sign out' }
+        { href: PathConstant.home, label: 'Sign out' }
     ]
     useEffect(() => {
         const CallApi = async () => {
-            const promises = [dispatch(getSearchDiskGameThunk()), dispatch(getSearchNintendoThunk())]
+            const promises = [
+                dispatch(getSearchDiskGameThunk()),
+                dispatch(getSearchNintendoThunk()),
+                dispatch(getDetailUserThunk(userDetail?._id))
+            ]
             await Promise.all(promises)
-                .then(([data1, data2]) => {
+                .then(([data1, data2, data3]) => {
                     dispatch(setSearchDiskGame(data1.payload as IDiskGameModel[]))
                     dispatch(setSearchNintendo(data2.payload as INintendoModel[]))
+                    dispatch(setUserDetail(data3.payload as IUserModel))
                 })
                 .catch((error) => console.error(error))
         }
         CallApi()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
     const onSubmitSearchInput = async (event: IDiskGameModel & INintendoModel) => {
         dispatch(getSearchNintendoThunk(event))
@@ -59,6 +67,10 @@ const HeaderComponent = () => {
         setInputValue(value)
         setValue('q', value)
         handleSubmit(onSubmitSearchInput)(e)
+    }
+
+    const handleSignOut = () => {
+        dispatch(setLogout())
     }
 
     return (
@@ -174,35 +186,42 @@ const HeaderComponent = () => {
                         </div>
                     )}
                 </PopoverComponent>
-                <Menu as="div" className="relative inline-block text-left">
-                    <div>
-                        <Menu.Button>
-                            <img
-                                src="https://scontent.fsgn5-1.fna.fbcdn.net/v/t39.30808-6/338738635_1464840364286563_6118385458477066950_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=ZkdBfKnz4AYAX-zyRPd&_nc_ht=scontent.fsgn5-1.fna&oh=00_AfBtffYSQG-c66TMs6Ah_lCTAzvq1ZII9oPUq9jxPRQLZg&oe=649882D6"
-                                alt="Avatar"
-                                className="h-10 w-10 rounded-full"
-                            />
-                        </Menu.Button>
-                        <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 bg-white px-2 border border-gray-400 rounded-sm">
-                            {links.map((link) => (
-                                /* Use the `active` state to conditionally style the active item. */
-                                <Menu.Item key={link.href} as={Fragment}>
-                                    {({ active }) => (
-                                        <a
-                                            href={link.href}
-                                            className={classNames(
-                                                active && 'bg-gray-100',
-                                                'p-1.5 rounded-sm flex items-center text-gray-700 hover:text-orange-100 focus:outline-none active:bg-gray-100'
-                                            )}
-                                        >
-                                            {link.label}
-                                        </a>
-                                    )}
-                                </Menu.Item>
-                            ))}
-                        </Menu.Items>
-                    </div>
-                </Menu>
+                {isAuth ? (
+                    <Menu as="div" className="relative inline-block text-left">
+                        <div>
+                            <Menu.Button>
+                                <img src={userDetail?.avatar} alt="Avatar" className="h-10 w-10 rounded-full" />
+                            </Menu.Button>
+                            <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 bg-white px-2 border border-gray-400 rounded-sm">
+                                {links.map((link) => (
+                                    /* Use the `active` state to conditionally style the active item. */
+                                    <Menu.Item key={link.href} as={Fragment}>
+                                        {({ active }) => (
+                                            <a
+                                                href={link.href}
+                                                className={classNames(
+                                                    active && 'bg-gray-100',
+                                                    'p-1.5 rounded-sm flex items-center text-gray-700 hover:text-orange-100 focus:outline-none active:bg-gray-100'
+                                                )}
+                                                onClick={link.label === 'Sign out' ? handleSignOut : undefined}
+                                            >
+                                                {link.label}
+                                            </a>
+                                        )}
+                                    </Menu.Item>
+                                ))}
+                            </Menu.Items>
+                        </div>
+                    </Menu>
+                ) : (
+                    <Link
+                        to={PathConstant.user.login}
+                        className="px-2 py-2 bg-green-400 rounded-md shadow-sm shadow-green-200 hover:bg-green-500 active:bg-green-700
+                    font-mono font-bold"
+                    >
+                        Login
+                    </Link>
+                )}
             </div>
         </div>
     )

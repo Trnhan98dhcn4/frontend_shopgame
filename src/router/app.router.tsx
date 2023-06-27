@@ -12,6 +12,8 @@ const AppRouter = () => {
                 <Route path={PathConstant.nintendo.detail} element={<Pages.DetailsNintendoComponent />} />
                 <Route path={PathConstant.diskGame.list} element={<Pages.DiskGame />} />
                 <Route path={PathConstant.diskGame.detail} element={<Pages.DetailDiskGame />} />
+                <Route path={PathConstant.user.login} element={<Pages.LoginComponent />} />
+                <Route path={PathConstant.user.register} element={<Pages.RegisterComponent />} />
             </Route>
             <Route path="*" element={<h1>Page Error 404</h1>} />
         </Routes>
