@@ -20,3 +20,6 @@ export const deleteCartShop = async (id: string) => {
     const _url = URL + '/' + id
     return apiDelete<ICartShop>(_url)
 }
+export const deleteAllCartShop = async () => {
+    return apiDelete<ICartShop>(URL)
+}

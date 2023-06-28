@@ -14,6 +14,7 @@ const AppRouter = () => {
                 <Route path={PathConstant.diskGame.detail} element={<Pages.DetailDiskGame />} />
                 <Route path={PathConstant.user.login} element={<Pages.LoginComponent />} />
                 <Route path={PathConstant.user.register} element={<Pages.RegisterComponent />} />
+                <Route path={PathConstant.user.account} element={<Pages.AccountComponent />} />
             </Route>
             <Route path="*" element={<h1>Page Error 404</h1>} />
         </Routes>

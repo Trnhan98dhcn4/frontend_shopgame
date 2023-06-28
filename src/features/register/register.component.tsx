@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../app/hooks'
 import { PathConstant } from '../../constant/path.constant'
-import { IUserModel } from '../../model'
+import { IUsersModel } from '../../model'
 import { postUserRegisterThunk } from '../../reducer/thunk.api'
 
 const RegisterComponent = () => {
@@ -13,18 +13,19 @@ const RegisterComponent = () => {
         register,
         handleSubmit,
         formState: { errors }
-    } = useForm<IUserModel>({
+    } = useForm<IUsersModel>({
         defaultValues: {
             user: '',
             password: '',
             name: '',
             address: '',
             avatar: '',
-            price: ''
+            pricePrev: '',
+            historyUser: [{ img1: '', price: '', SL: '', title: '' }]
         }
     })
 
-    const handleRegisterSubmit = async (event: IUserModel) => {
+    const handleRegisterSubmit = async (event: IUsersModel) => {
         await dispatch(postUserRegisterThunk(event))
         navigate(PathConstant.user.login)
     }

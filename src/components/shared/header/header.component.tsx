@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { RootState } from '../../../app/store'
 import { PathConstant } from '../../../constant/path.constant'
-import { IDiskGameModel, INintendoModel, IUserModel } from '../../../model'
+import { IDiskGameModel, INintendoModel, IUsersModel } from '../../../model'
 import { setCount } from '../../../reducer/cartshop.reducer'
 import { setSearchDiskGame } from '../../../reducer/diskgame.reducer'
 import { setSearchNintendo } from '../../../reducer/nintendo.reducer'
@@ -32,7 +32,7 @@ const HeaderComponent = () => {
     })
 
     const links = [
-        { href: '/account-settings', label: 'Account settings' },
+        { href: PathConstant.user.account, label: 'Account settings' },
         { href: '/support', label: 'Support' },
         { href: '/license', label: 'License' },
         { href: PathConstant.home, label: 'Sign out' }
@@ -48,7 +48,7 @@ const HeaderComponent = () => {
                 .then(([data1, data2, data3]) => {
                     dispatch(setSearchDiskGame(data1.payload as IDiskGameModel[]))
                     dispatch(setSearchNintendo(data2.payload as INintendoModel[]))
-                    dispatch(setUserDetail(data3.payload as IUserModel))
+                    dispatch(setUserDetail(data3.payload as IUsersModel))
                 })
                 .catch((error) => console.error(error))
         }
@@ -171,6 +171,18 @@ const HeaderComponent = () => {
             </div>
 
             <div className="flex items-center gap-2 mr-2 relative">
+                {isAuth ? (
+                    <div className="flex flex-row justify-center items-center gap-2">
+                        <img
+                            src="https://cdn.onlinewebfonts.com/svg/img_241150.png"
+                            alt="price-icon"
+                            className="h-[1.5rem] w-[1.5rem]"
+                        />
+                        <p className="font-bold text-yellow-400">{Number(userDetail.pricePrev).toLocaleString()} VND</p>
+                    </div>
+                ) : (
+                    <p>0 VND</p>
+                )}
                 <PopoverComponent>
                     <img
                         src="https://cdn-icons-png.flaticon.com/512/263/263142.png"
@@ -197,8 +209,8 @@ const HeaderComponent = () => {
                                     /* Use the `active` state to conditionally style the active item. */
                                     <Menu.Item key={link.href} as={Fragment}>
                                         {({ active }) => (
-                                            <a
-                                                href={link.href}
+                                            <Link
+                                                to={link.href}
                                                 className={classNames(
                                                     active && 'bg-gray-100',
                                                     'p-1.5 rounded-sm flex items-center text-gray-700 hover:text-orange-100 focus:outline-none active:bg-gray-100'
@@ -206,7 +218,7 @@ const HeaderComponent = () => {
                                                 onClick={link.label === 'Sign out' ? handleSignOut : undefined}
                                             >
                                                 {link.label}
-                                            </a>
+                                            </Link>
                                         )}
                                     </Menu.Item>
                                 ))}

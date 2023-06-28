@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction, AsyncThunk } from '@reduxjs/toolkit'
 import { ICartShop } from '../model'
-import { deleteCartShopThunk, getAllCartShopThink, postCartShopThunk, putCartShopThunk } from './thunk.api'
+import {
+    deleteAllCartShopThunk,
+    deleteCartShopThunk,
+    getAllCartShopThink,
+    postCartShopThunk,
+    putCartShopThunk
+} from './thunk.api'
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
 
@@ -59,6 +65,12 @@ const cardShopSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(deleteAllCartShopThunk.fulfilled, (state, action) => {
+                return {
+                    ...state,
+                    dataCardShop: []
+                }
+            })
             .addCase(deleteCartShopThunk.fulfilled, (state, action) => {
                 const _CartShop = action.meta.requestId
                 const index = state.dataCardShop.findIndex((f) => f._id === _CartShop)

@@ -1,6 +1,13 @@
 import { AsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { IUserModel } from '../model'
-import { getAllUserThunk, getDetailUserThunk, postUserLoginThunk, postUserRegisterThunk } from './thunk.api'
+import { IUsersModel } from '../model'
+import {
+    getAllUserThunk,
+    getDetailUserThunk,
+    postShopUserThunk,
+    postUserLoginThunk,
+    postUserRegisterThunk,
+    putUserUpdateThunk
+} from './thunk.api'
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
 
@@ -9,8 +16,8 @@ type RejectedAction = ReturnType<GenericAsyncThunk['rejected']>
 type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 
 interface IUserState {
-    dataUser: IUserModel[]
-    detailUser: IUserModel
+    dataUser: IUsersModel[]
+    detailUser: IUsersModel
     loading: boolean
     isAuth: boolean
     error: null | string
@@ -19,7 +26,7 @@ interface IUserState {
 
 const initialState: IUserState = {
     dataUser: [],
-    detailUser: {} as IUserModel,
+    detailUser: {} as IUsersModel,
     loading: false,
     isAuth: false,
     error: null,
@@ -30,10 +37,10 @@ const UserSlice = createSlice({
     name: 'User',
     initialState,
     reducers: {
-        setUserData: (state, action: PayloadAction<IUserModel[]>) => {
+        setUserData: (state, action: PayloadAction<IUsersModel[]>) => {
             state.dataUser = action.payload
         },
-        setUserDetail: (state, action: PayloadAction<IUserModel>) => {
+        setUserDetail: (state, action: PayloadAction<IUsersModel>) => {
             state.detailUser = action.payload
         },
         setLogin: (state) => {
@@ -45,6 +52,14 @@ const UserSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(putUserUpdateThunk.fulfilled, (state, action) => {
+                const _user = action.payload
+                const index = state.dataUser.findIndex((f) => (f._id = _user._id))
+                state.dataUser[index] = _user
+            })
+            .addCase(postShopUserThunk.fulfilled, (state, action) => {
+                state.dataUser.push(action.payload)
+            })
             .addCase(getDetailUserThunk.fulfilled, (state, action) => {
                 state.detailUser = action.payload
             })

@@ -4,15 +4,27 @@ import { Fragment, useEffect, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks'
 import { RootState } from '../../../../app/store'
-import { getAllCartShopThink, putCartShopThunk, deleteCartShopThunk } from '../../../../reducer/thunk.api'
-import { setCountUp, setCountDown } from '../../../../reducer/cartshop.reducer'
-import { ICartShop } from '../../../../model'
+import { ICartShop, IUsersModel } from '../../../../model'
+import { setCountDown, setCountUp } from '../../../../reducer/cartshop.reducer'
+import {
+    deleteAllCartShopThunk,
+    deleteCartShopThunk,
+    getAllCartShopThink,
+    getDetailUserThunk,
+    putCartShopThunk,
+    putUserUpdateThunk
+} from '../../../../reducer/thunk.api'
+import { useNavigate } from 'react-router-dom'
+import { PathConstant } from '../../../../constant/path.constant'
 
 const PopoverComponent = ({ children }: any) => {
     const cartShop = useAppSelector((state: RootState) => state.cartShop.dataCardShop)
+    const detailUser = useAppSelector((state: RootState) => state.user.detailUser)
     const dispatch = useAppDispatch()
+    const isAuth = useAppSelector((state: RootState) => state.user.isAuth)
 
     const [showUpdate, setShowUpdate] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const CallApi = async () => {
@@ -38,6 +50,32 @@ const PopoverComponent = ({ children }: any) => {
         await dispatch(deleteCartShopThunk(event._id))
         await dispatch(getAllCartShopThink())
     }
+
+    const handlerAddUserShop = async (event: ICartShop[]) => {
+        if (isAuth) {
+            const priceUser = parseInt(detailUser.pricePrev?.replace(/,/g, '')) - resultCartShop
+            if (priceUser < 0) {
+                alert('Số tiền của bạn không đủ hay nap thêm để mua đồ !!!')
+            } else {
+                console.log(priceUser)
+                const updatedUser: IUsersModel = {
+                    ...detailUser,
+                    pricePrev: String(priceUser),
+                    historyUser: event.map((item) => ({
+                        img1: item.img1,
+                        title: item.title,
+                        price: item.price,
+                        SL: item.SL
+                    }))
+                }
+                await dispatch(putUserUpdateThunk({ id: detailUser._id, body: { ...updatedUser } }))
+                await dispatch(getDetailUserThunk(detailUser._id))
+                await dispatch(deleteAllCartShopThunk())
+            }
+        } else {
+            navigate(PathConstant.user.login)
+        }
+    }
     return (
         <Popover className="relative">
             {({ open }) => (
@@ -61,8 +99,21 @@ const PopoverComponent = ({ children }: any) => {
                     >
                         <Popover.Panel className="absolute right-0 z-10 mt-2.5 w-[20rem]">
                             <div className="bg-white rounded-sm shadow-md ring-1 ring-black ring-opacity-5 px-2 py-2.5">
-                                <div className="border-b border-gray-500">
+                                <div className="border-b border-gray-500 flex justify-between items-center">
                                     <strong className="text-gray-700 font-medium ">Card Shop</strong>
+                                    <button
+                                        className="px-2 py-2"
+                                        onClick={() => {
+                                            handlerAddUserShop(cartShop)
+                                        }}
+                                    >
+                                        <img
+                                            src="https://cdn-icons-png.flaticon.com/512/263/263142.png"
+                                            alt="cart"
+                                            height={24}
+                                            width={24}
+                                        />
+                                    </button>
                                 </div>
                                 <div className="mt-2 py-1 text-sm h-[15rem] overflow-auto">
                                     {cartShop.length === 0 ? (

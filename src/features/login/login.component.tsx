@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAppDispatch } from '../../app/hooks'
 import { PathConstant } from '../../constant/path.constant'
-import { IUserModel } from '../../model'
+import { IUsersModel } from '../../model'
 import { postUserLoginThunk } from '../../reducer/thunk.api'
 import { setLogin } from '../../reducer/user.reducer'
 import { useState } from 'react'
@@ -25,16 +25,18 @@ const LoginComponent = () => {
         handleSubmit,
         setError,
         formState: { errors }
-    } = useForm<IUserModel>({
+    } = useForm<IUsersModel>({
         defaultValues: {
             address: '',
             name: '',
             password: '',
-            price: '',
-            user: ''
+            pricePrev: '',
+            user: '',
+            avatar: '',
+            historyUser: [{ img1: '', price: '', SL: '', title: '' }]
         }
     })
-    const handleLoginSubmit = async (event: IUserModel) => {
+    const handleLoginSubmit = async (event: IUsersModel) => {
         const user = (await dispatch(postUserLoginThunk(event))) as IUser
 
         if (user.payload?.user) {

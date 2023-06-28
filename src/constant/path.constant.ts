@@ -11,6 +11,7 @@ export const PathConstant = {
     },
     user: {
         login: '/login',
-        register: '/register'
+        register: '/register',
+        account: '/account'
     }
 }
